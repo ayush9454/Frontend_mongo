@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import api from '../services/api';
 
 const MotionPaper = motion(Paper);
 
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5050/api/auth/login', formData);
+      const res = await api.post('/auth/login', formData);
       localStorage.setItem('userId', res.data.userId);
       login({ email: formData.email, role: 'user' });
       navigate('/dashboard');
