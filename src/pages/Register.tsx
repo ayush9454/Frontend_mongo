@@ -18,7 +18,7 @@ const Register: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5050/api/auth/register', form);
+      await axios.post('https://backend-mongodb-vkph.onrender.com/api/auth/register', form);
       setSuccess('Registration successful! Please log in.');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err: any) {
