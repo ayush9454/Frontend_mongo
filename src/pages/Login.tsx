@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await api.post('/auth/login', formData);
+      const res = await api.post('https://backend-mongodb-vkph.onrender.com/auth/login', formData);
       localStorage.setItem('userId', res.data.userId);
       login({ email: formData.email, role: 'user' });
       navigate('/dashboard');
