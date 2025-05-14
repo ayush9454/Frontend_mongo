@@ -125,8 +125,8 @@ const ParkingLots: React.FC = () => {
         },
       };
       await parkingService.createBooking(bookingData);
-      setBookingDialogOpen(false);
-      setShowConfirmation(true);
+    setBookingDialogOpen(false);
+    setShowConfirmation(true);
       window.dispatchEvent(new CustomEvent('bookingUpdate'));
       const response = await parkingService.getParkingSpaces();
       setParkingSpaces(response.data);
@@ -229,66 +229,66 @@ const ParkingLots: React.FC = () => {
           ) : (
             filteredLots.map((lot) => (
               <Grid item xs={12} sm={6} md={4} key={lot._id}>
-                <MotionCard
-                  whileHover={{ y: -10 }}
-                  sx={{
-                    height: '100%',
-                    bgcolor: 'background.paper',
-                    borderRadius: 2,
-                    border: '1px solid #e0e0e0',
-                    transition: 'transform 0.3s ease-in-out',
-                  }}
-                >
-                  <CardContent>
-                    <MotionBox
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-                        {lot.name}
-                      </Typography>
+              <MotionCard
+                whileHover={{ y: -10 }}
+                sx={{
+                  height: '100%',
+                  bgcolor: 'background.paper',
+                  borderRadius: 2,
+                  border: '1px solid #e0e0e0',
+                  transition: 'transform 0.3s ease-in-out',
+                }}
+              >
+                <CardContent>
+                  <MotionBox
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+                      {lot.name}
+                    </Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         Location: {lot.location}
                       </Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         Available: {lot.availableSpots} / {lot.capacity}
                       </Typography>
-                    </MotionBox>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  </MotionBox>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Price:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.primary' }}>
                         ₹{lot.pricePerHour}/hour
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Status:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.primary' }}>
                         {lot.availableSpots > 0 ? 'Available' : 'Full'}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      startIcon={<DirectionsCar />}
-                      onClick={() => handleBookNow(lot)}
-                      sx={{
-                        bgcolor: 'primary.main',
-                        '&:hover': {
-                          bgcolor: 'primary.dark'
-                        }
-                      }}
+                    </Typography>
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<DirectionsCar />}
+                    onClick={() => handleBookNow(lot)}
+                    sx={{
+                      bgcolor: 'primary.main',
+                      '&:hover': {
+                        bgcolor: 'primary.dark'
+                      }
+                    }}
                       disabled={lot.availableSpots === 0}
-                    >
-                      Book Now
-                    </Button>
-                  </CardActions>
-                </MotionCard>
+                  >
+                    Book Now
+                  </Button>
+                </CardActions>
+              </MotionCard>
               </Grid>
             ))
           )}
@@ -328,21 +328,21 @@ const ParkingLots: React.FC = () => {
                           ))}
                         </Select>
                       </FormControl>
-                      <FormControl fullWidth sx={{ mb: 2 }}>
+                    <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel>Duration (hours)</InputLabel>
-                        <Select
-                          value={bookingDuration}
+                      <Select
+                        value={bookingDuration}
                           onChange={e => setBookingDuration(Number(e.target.value))}
-                          label="Duration (hours)"
-                        >
+                        label="Duration (hours)"
+                      >
                           {[1, 2, 3, 4, 5, 6, 8, 12, 24].map(hours => (
-                            <MenuItem key={hours} value={hours}>
-                              {hours} {hours === 1 ? 'hour' : 'hours'}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          <MenuItem key={hours} value={hours}>
+                            {hours} {hours === 1 ? 'hour' : 'hours'}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Price per hour: ₹{adjustedPrice}
                       </Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -374,7 +374,7 @@ const ParkingLots: React.FC = () => {
                       )}
                       <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                         (Fake payment for demo)
-                      </Typography>
+                    </Typography>
                     </>
                   )}
                 </DialogContent>

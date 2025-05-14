@@ -40,8 +40,8 @@ const Login: React.FC = () => {
     try {
       const res = await api.post('/auth/login', formData);
       localStorage.setItem('userId', res.data.userId);
-      login({ email: formData.email, role: 'user' });
-      navigate('/dashboard');
+        login({ email: formData.email, role: 'user' });
+        navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
     }
