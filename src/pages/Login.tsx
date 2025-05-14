@@ -27,11 +27,22 @@ const Login: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting login form...');
       await login(email, password);
+      console.log('Login successful, navigating to parking lots...');
       navigate('/parking-lots');
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.response?.data?.message || 'Failed to login. Please try again.');
+      if (err.response) {
+        console.error('Error response:', err.response.data);
+        setError(err.response.data.message || 'Failed to login. Please check your credentials.');
+      } else if (err.request) {
+        console.error('No response received:', err.request);
+        setError('No response from server. Please try again later.');
+      } else {
+        console.error('Error setting up request:', err.message);
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -61,11 +72,11 @@ const Login: React.FC = () => {
             Sign in
           </Typography>
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
               {error}
             </Alert>
           )}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
               required

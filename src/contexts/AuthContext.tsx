@@ -49,7 +49,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       axios.get('https://backend-mongodb-vkph.onrender.com/api/auth/me')
         .then(response => {
           console.log('User data received:', response.data);
-          setUser(response.data);
+          if (response.data && response.data.email) {
+            setUser({
+              email: response.data.email,
+              id: response.data.id || response.data._id
+            });
+          } else {
+            console.error('Invalid user data received:', response.data);
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
+          }
         })
         .catch(error => {
           console.error('Error fetching user data:', error);
@@ -72,12 +81,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password
       });
       
-      const { token, user } = response.data;
-      console.log('Login successful:', user);
+      const { token, user: userData } = response.data;
+      console.log('Login response:', response.data);
       
+      if (!token || !userData || !userData.email) {
+        throw new Error('Invalid response from server');
+      }
+
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(user);
+      
+      setUser({
+        email: userData.email,
+        id: userData.id || userData._id
+      });
+      
+      console.log('Login successful, user set:', userData);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -92,12 +111,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password
       });
       
-      const { token, user } = response.data;
-      console.log('Registration successful:', user);
+      const { token, user: userData } = response.data;
+      console.log('Registration response:', response.data);
       
+      if (!token || !userData || !userData.email) {
+        throw new Error('Invalid response from server');
+      }
+
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(user);
+      
+      setUser({
+        email: userData.email,
+        id: userData.id || userData._id
+      });
+      
+      console.log('Registration successful, user set:', userData);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
