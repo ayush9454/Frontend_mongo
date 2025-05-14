@@ -64,14 +64,21 @@ const ParkingLots: React.FC = () => {
   useEffect(() => {
     const fetchParkingSpaces = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const response = await parkingService.getParkingSpaces();
         console.log('Parking spaces data:', response.data);
-        setParkingSpaces(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch parking spaces');
-        setLoading(false);
+        if (response.data && Array.isArray(response.data)) {
+          setParkingSpaces(response.data);
+        } else {
+          console.error('Invalid response format:', response.data);
+          setError('Invalid data format received from server');
+        }
+      } catch (err: any) {
         console.error('Error fetching parking spaces:', err);
+        setError(err.response?.data?.error || 'Failed to fetch parking spaces');
+      } finally {
+        setLoading(false);
       }
     };
 
