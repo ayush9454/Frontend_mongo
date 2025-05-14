@@ -1,22 +1,29 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import theme from './theme';
-import Navbar from './components/Navbar';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ParkingLots from './pages/ParkingLots';
-import MyBookings from './pages/MyBookings';
-import BookingHistory from './pages/BookingHistory';
+import Bookings from './pages/Bookings';
+import Profile from './pages/Profile';
+import Navbar from './components/Navbar';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
-};
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
-const App: React.FC = () => {
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -26,35 +33,28 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <ParkingLots />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/my-bookings"
-              element={
-                <ProtectedRoute>
-                  <MyBookings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/booking-history"
-              element={
-                <ProtectedRoute>
-                  <BookingHistory />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/parking-lots" element={
+              <PrivateRoute>
+                <ParkingLots />
+              </PrivateRoute>
+            } />
+            <Route path="/bookings" element={
+              <PrivateRoute>
+                <Bookings />
+              </PrivateRoute>
+            } />
+            <Route path="/profile" element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            } />
+            <Route path="/" element={<Navigate to="/parking-lots" replace />} />
+            <Route path="*" element={<Navigate to="/parking-lots" replace />} />
           </Routes>
         </Router>
       </AuthProvider>
     </ThemeProvider>
   );
-};
+}
 
 export default App;

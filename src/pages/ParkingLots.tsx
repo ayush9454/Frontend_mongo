@@ -70,6 +70,7 @@ const ParkingLots: React.FC = () => {
         console.log('Parking spaces data:', response.data);
         if (response.data && Array.isArray(response.data)) {
           setParkingSpaces(response.data);
+          console.log(`Loaded ${response.data.length} parking spaces`);
         } else {
           console.error('Invalid response format:', response.data);
           setError('Invalid data format received from server');
@@ -90,6 +91,10 @@ const ParkingLots: React.FC = () => {
       lot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lot.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    console.log('Filtered parking lots:', filteredLots);
+  }, [filteredLots]);
 
   const handleBookNow = (lot: any) => {
     setSelectedLot(lot);

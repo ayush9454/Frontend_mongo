@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Update this to your Render deployment URL
 const API_BASE_URL = 'https://backend-mongodb-vkph.onrender.com/api';
 
 const api = axios.create({
@@ -17,6 +18,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Log the request for debugging
+    console.log('Making request to:', config.url);
     return config;
   },
   (error) => {
@@ -27,7 +30,11 @@ api.interceptors.request.use(
 
 // Add a response interceptor to handle token expiration and log errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Log successful responses for debugging
+    console.log('Response from:', response.config.url, response.status);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
