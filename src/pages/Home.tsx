@@ -7,6 +7,7 @@ const MotionPaper = motion(Paper);
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const isAuthenticated = localStorage.getItem('token');
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -72,21 +73,23 @@ const Home: React.FC = () => {
                   >
                     Find Parking
                   </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => navigate('/login')}
-                    sx={{
-                      borderColor: 'white',
-                      color: 'white',
-                      '&:hover': {
+                  {!isAuthenticated && (
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      onClick={() => navigate('/login')}
+                      sx={{
                         borderColor: 'white',
-                        bgcolor: 'rgba(255, 255, 255, 0.1)',
-                      },
-                    }}
-                  >
-                    Sign In
-                  </Button>
+                        color: 'white',
+                        '&:hover': {
+                          borderColor: 'white',
+                          bgcolor: 'rgba(255, 255, 255, 0.1)',
+                        },
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                  )}
                 </Box>
               </motion.div>
             </div>
@@ -175,20 +178,22 @@ const Home: React.FC = () => {
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
               Join thousands of users who are already using our smart parking system.
             </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/login')}
-              sx={{
-                bgcolor: 'white',
-                color: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.9)',
-                },
-              }}
-            >
-              Sign In
-            </Button>
+            {!isAuthenticated && (
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/login')}
+                sx={{
+                  bgcolor: 'white',
+                  color: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  },
+                }}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </Container>
       </Box>
@@ -214,4 +219,4 @@ const features = [
   },
 ];
 
-export default Home; 
+export default Home;

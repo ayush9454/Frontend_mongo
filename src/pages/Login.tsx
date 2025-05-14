@@ -37,13 +37,42 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Validate input
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+  
     try {
       const res = await api.post('/auth/login', formData);
+      
+      // Validate response data
+      if (!res.data.token || !res.data.userId) {
+        throw new Error('Invalid response from server');
+      }
+  
+      // Create user data object
+      const userData = {
+        id: res.data.userId,
+        email: res.data.email,
+        name: res.data.name,
+        role: 'user'
+      };
+  
+      // Store authentication data in localStorage
+      localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
-        login({ email: formData.email, role: 'user' });
-        navigate('/dashboard');
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      // Update authentication context
+      login(userData);
+      
+      // Navigate to dashboard
+      navigate('/dashboard', { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+      console.error('Login error:', err);
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
     }
   };
 
@@ -104,4 +133,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;
