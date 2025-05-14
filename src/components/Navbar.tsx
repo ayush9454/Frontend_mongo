@@ -1,42 +1,56 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+} from '@mui/material';
+import { DirectionsCar } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { isAuthenticated, logout, loading } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  if (loading) {
+    return null; // Don't show navbar while loading
+  }
+
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar position="static">
       <Toolbar>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer', color: 'primary.main' }}
-          onClick={() => navigate('/')}
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          component={RouterLink}
+          to="/"
+          sx={{ mr: 2 }}
         >
-          Smart Parking
+          <DirectionsCar />
+        </IconButton>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Smart Parking System
         </Typography>
         <Box>
-          {user ? (
+          {isAuthenticated ? (
             <>
-              <Button color="inherit" onClick={() => navigate('/dashboard')}>
-                Dashboard
-              </Button>
               <Button color="inherit" onClick={() => navigate('/parking-lots')}>
                 Parking Lots
               </Button>
               <Button color="inherit" onClick={() => navigate('/bookings')}>
                 My Bookings
               </Button>
-              <Button color="inherit" onClick={() => navigate('/history')}>
-                History
+              <Button color="inherit" onClick={() => navigate('/profile')}>
+                Profile
               </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
@@ -46,6 +60,9 @@ const Navbar: React.FC = () => {
             <>
               <Button color="inherit" onClick={() => navigate('/login')}>
                 Login
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/register')}>
+                Register
               </Button>
             </>
           )}
