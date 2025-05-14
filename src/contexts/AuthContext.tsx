@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import jwt_decode from 'jwt-decode';
 
 interface User {
   email: string;
@@ -30,21 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-    } else {
-      // Try to restore from token
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const decoded: any = (jwt_decode as any)(token);
-          if (decoded && decoded.email) {
-            const userData = { email: decoded.email, role: 'user' as const };
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
-          }
-        } catch (e) {
-          // Invalid token, do nothing
-        }
-      }
     }
   }, []);
 
