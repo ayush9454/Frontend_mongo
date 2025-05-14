@@ -64,22 +64,13 @@ const ParkingLots: React.FC = () => {
   useEffect(() => {
     const fetchParkingSpaces = async () => {
       try {
-        setLoading(true);
-        setError(null);
         const response = await parkingService.getParkingSpaces();
-        console.log('Parking spaces data:', response.data);
-        if (response.data && Array.isArray(response.data)) {
-          setParkingSpaces(response.data);
-          console.log(`Loaded ${response.data.length} parking spaces`);
-        } else {
-          console.error('Invalid response format:', response.data);
-          setError('Invalid data format received from server');
-        }
-      } catch (err: any) {
-        console.error('Error fetching parking spaces:', err);
-        setError(err.response?.data?.error || 'Failed to fetch parking spaces');
-      } finally {
+        setParkingSpaces(response.data);
         setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch parking spaces');
+        setLoading(false);
+        console.error('Error fetching parking spaces:', err);
       }
     };
 
@@ -91,10 +82,6 @@ const ParkingLots: React.FC = () => {
       lot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lot.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  useEffect(() => {
-    console.log('Filtered parking lots:', filteredLots);
-  }, [filteredLots]);
 
   const handleBookNow = (lot: any) => {
     setSelectedLot(lot);

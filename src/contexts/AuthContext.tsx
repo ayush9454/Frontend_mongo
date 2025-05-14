@@ -1,31 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 
 interface User {
   email: string;
-  id: string;
-  name?: string;
+  role: 'user' | 'admin';
 }
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  login: (userData: User) => void;
   logout: () => void;
-  loading: boolean;
 }
 
-const defaultContext: AuthContextType = {
-  user: null,
-  isAuthenticated: false,
-  login: async () => {},
-  register: async () => {},
-  logout: () => {},
-  loading: true
-};
-
-const AuthContext = createContext<AuthContextType>(defaultContext);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -37,133 +23,27 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('AuthProvider mounted');
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Set default authorization header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Verify token and get user info
-      axios.get('https://backend-mongodb-vkph.onrender.com/api/auth/me')
-        .then(response => {
-          console.log('User data received:', response.data);
-          if (response.data && response.data.email) {
-            setUser({
-              email: response.data.email,
-              id: response.data.userId || response.data.id || response.data._id,
-              name: response.data.name
-            });
-          } else {
-            console.error('Invalid user data received:', response.data);
-            localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching user data:', error);
-          localStorage.removeItem('token');
-          delete axios.defaults.headers.common['Authorization'];
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
+    // Check if user is stored in localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      console.log('Attempting login...');
-      const response = await axios.post('https://backend-mongodb-vkph.onrender.com/api/auth/login', {
-        email,
-        password
-      });
-      
-      console.log('Login response:', response.data);
-      
-      if (!response.data || !response.data.email) {
-        throw new Error('Invalid response from server');
-      }
-
-      // Store the token if it exists
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      }
-      
-      setUser({
-        email: response.data.email,
-        id: response.data.userId || response.data.id || response.data._id,
-        name: response.data.name
-      });
-      
-      console.log('Login successful, user set:', response.data);
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
-  };
-
-  const register = async (email: string, password: string, name: string) => {
-    try {
-      console.log('Attempting registration...');
-      const response = await axios.post('https://backend-mongodb-vkph.onrender.com/api/auth/register', {
-        email,
-        password,
-        name
-      });
-      
-      console.log('Registration response:', response.data);
-      
-      if (!response.data || !response.data.email) {
-        throw new Error('Invalid response from server');
-      }
-
-      // Store the token if it exists
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      }
-      
-      setUser({
-        email: response.data.email,
-        id: response.data.userId || response.data.id || response.data._id,
-        name: response.data.name
-      });
-      
-      console.log('Registration successful, user set:', response.data);
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
-    console.log('Logging out...');
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    localStorage.removeItem('user');
   };
-
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    login,
-    register,
-    logout,
-    loading
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
