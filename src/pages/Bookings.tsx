@@ -57,6 +57,21 @@ const getSpotTypeMultiplier = (type: string) => {
   return found ? found.multiplier : 1;
 };
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return 'success';
+    case 'cancelled':
+      return 'error';
+    case 'confirmed':
+      return 'info';
+    case 'active':
+      return 'primary';
+    default:
+      return 'default';
+  }
+};
+
 const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const userId = localStorage.getItem('userId') || '';
@@ -70,7 +85,12 @@ const Bookings: React.FC = () => {
     fetchBookings();
     const handleUpdate = () => fetchBookings();
     window.addEventListener('bookingUpdate', handleUpdate);
-    return () => window.removeEventListener('bookingUpdate', handleUpdate);
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(fetchBookings, 60000);
+    return () => {
+      window.removeEventListener('bookingUpdate', handleUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleCancelBooking = async (bookingId: string) => {
@@ -199,6 +219,12 @@ const Bookings: React.FC = () => {
                       <Typography variant="body2" sx={{ mb: 2 }}>
                         ₹{booking.totalPrice}
                       </Typography>
+                      <Chip
+                        label={booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        color={getStatusColor(booking.status)}
+                        size="small"
+                        sx={{ mb: 1 }}
+                      />
                       <Button
                         variant="outlined"
                         startIcon={<Download />}

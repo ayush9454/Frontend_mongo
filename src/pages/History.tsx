@@ -63,7 +63,12 @@ const History: React.FC = () => {
     fetchHistory();
     const handleUpdate = () => fetchHistory();
     window.addEventListener('bookingUpdate', handleUpdate);
-    return () => window.removeEventListener('bookingUpdate', handleUpdate);
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(fetchHistory, 60000);
+    return () => {
+      window.removeEventListener('bookingUpdate', handleUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -81,7 +86,14 @@ const History: React.FC = () => {
     // Try to parse as date, fallback to original string if invalid
     const parsed = new Date(dateTime);
     if (!isNaN(parsed.getTime())) {
-      return parsed.toLocaleString();
+      return parsed.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
     }
     return dateTime;
   };
