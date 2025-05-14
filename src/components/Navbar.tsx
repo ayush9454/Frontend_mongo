@@ -9,16 +9,20 @@ import {
   IconButton,
 } from '@mui/material';
 import { DirectionsCar } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { isAuthenticated, logout, loading } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  if (loading) {
+    return null; // Don't show navbar while loading
+  }
 
   return (
     <AppBar position="static">
@@ -34,19 +38,19 @@ const Navbar: React.FC = () => {
           <DirectionsCar />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Smart Parking
+          Smart Parking System
         </Typography>
         <Box>
           {isAuthenticated ? (
             <>
-              <Button color="inherit" component={RouterLink} to="/">
+              <Button color="inherit" onClick={() => navigate('/parking-lots')}>
                 Parking Lots
               </Button>
-              <Button color="inherit" component={RouterLink} to="/my-bookings">
+              <Button color="inherit" onClick={() => navigate('/bookings')}>
                 My Bookings
               </Button>
-              <Button color="inherit" component={RouterLink} to="/booking-history">
-                History
+              <Button color="inherit" onClick={() => navigate('/profile')}>
+                Profile
               </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
@@ -54,10 +58,10 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
-              <Button color="inherit" component={RouterLink} to="/login">
+              <Button color="inherit" onClick={() => navigate('/login')}>
                 Login
               </Button>
-              <Button color="inherit" component={RouterLink} to="/register">
+              <Button color="inherit" onClick={() => navigate('/register')}>
                 Register
               </Button>
             </>

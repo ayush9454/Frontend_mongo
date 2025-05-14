@@ -10,6 +10,8 @@ import ParkingLots from './pages/ParkingLots';
 import Bookings from './pages/Bookings';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import { useAuth } from './contexts/AuthContext';
+import { CircularProgress } from '@mui/material';
 
 const theme = createTheme({
   palette: {
@@ -52,6 +54,46 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 }
 
+// Main App Content Component
+const AppContent: React.FC = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/parking-lots" element={
+          <PrivateRoute>
+            <ParkingLots />
+          </PrivateRoute>
+        } />
+        <Route path="/bookings" element={
+          <PrivateRoute>
+            <Bookings />
+          </PrivateRoute>
+        } />
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        } />
+        <Route path="/" element={<Navigate to="/parking-lots" replace />} />
+        <Route path="*" element={<Navigate to="/parking-lots" replace />} />
+      </Routes>
+    </>
+  );
+};
+
 function App() {
   useEffect(() => {
     console.log('App component mounted');
@@ -61,32 +103,11 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthProvider>
-          <Router>
-            <Navbar />
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/parking-lots" element={
-                <PrivateRoute>
-                  <ParkingLots />
-                </PrivateRoute>
-              } />
-              <Route path="/bookings" element={
-                <PrivateRoute>
-                  <Bookings />
-                </PrivateRoute>
-              } />
-              <Route path="/profile" element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              } />
-              <Route path="/" element={<Navigate to="/parking-lots" replace />} />
-              <Route path="*" element={<Navigate to="/parking-lots" replace />} />
-            </Routes>
-          </Router>
-        </AuthProvider>
+        <Router>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </Router>
       </ThemeProvider>
     </ErrorBoundary>
   );
