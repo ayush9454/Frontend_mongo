@@ -4,6 +4,7 @@ import axios from 'axios';
 interface User {
   email: string;
   id: string;
+  name?: string;
 }
 
 interface AuthContextType {
@@ -52,7 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (response.data && response.data.email) {
             setUser({
               email: response.data.email,
-              id: response.data.id || response.data._id
+              id: response.data.userId || response.data.id || response.data._id,
+              name: response.data.name
             });
           } else {
             console.error('Invalid user data received:', response.data);
@@ -81,22 +83,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password
       });
       
-      const { token, user: userData } = response.data;
       console.log('Login response:', response.data);
       
-      if (!token || !userData || !userData.email) {
+      if (!response.data || !response.data.email) {
         throw new Error('Invalid response from server');
       }
 
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // Store the token if it exists
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      }
       
       setUser({
-        email: userData.email,
-        id: userData.id || userData._id
+        email: response.data.email,
+        id: response.data.userId || response.data.id || response.data._id,
+        name: response.data.name
       });
       
-      console.log('Login successful, user set:', userData);
+      console.log('Login successful, user set:', response.data);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -111,22 +116,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password
       });
       
-      const { token, user: userData } = response.data;
       console.log('Registration response:', response.data);
       
-      if (!token || !userData || !userData.email) {
+      if (!response.data || !response.data.email) {
         throw new Error('Invalid response from server');
       }
 
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // Store the token if it exists
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      }
       
       setUser({
-        email: userData.email,
-        id: userData.id || userData._id
+        email: response.data.email,
+        id: response.data.userId || response.data.id || response.data._id,
+        name: response.data.name
       });
       
-      console.log('Registration successful, user set:', userData);
+      console.log('Registration successful, user set:', response.data);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
