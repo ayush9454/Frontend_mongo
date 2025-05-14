@@ -65,6 +65,7 @@ const ParkingLots: React.FC = () => {
     const fetchParkingSpaces = async () => {
       try {
         const response = await parkingService.getParkingSpaces();
+        console.log('Parking spaces data:', response.data);
         setParkingSpaces(response.data);
         setLoading(false);
       } catch (err) {

@@ -1,11 +1,19 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+} from '@mui/material';
+import { DirectionsCar } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -13,29 +21,31 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar position="static">
       <Toolbar>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer', color: 'primary.main' }}
-          onClick={() => navigate('/')}
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          component={RouterLink}
+          to="/"
+          sx={{ mr: 2 }}
         >
+          <DirectionsCar />
+        </IconButton>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Smart Parking
         </Typography>
         <Box>
-          {user ? (
+          {isAuthenticated ? (
             <>
-              <Button color="inherit" onClick={() => navigate('/dashboard')}>
-                Dashboard
-              </Button>
-              <Button color="inherit" onClick={() => navigate('/parking-lots')}>
+              <Button color="inherit" component={RouterLink} to="/">
                 Parking Lots
               </Button>
-              <Button color="inherit" onClick={() => navigate('/bookings')}>
+              <Button color="inherit" component={RouterLink} to="/my-bookings">
                 My Bookings
               </Button>
-              <Button color="inherit" onClick={() => navigate('/history')}>
+              <Button color="inherit" component={RouterLink} to="/booking-history">
                 History
               </Button>
               <Button color="inherit" onClick={handleLogout}>
@@ -44,8 +54,11 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
-              <Button color="inherit" onClick={() => navigate('/login')}>
+              <Button color="inherit" component={RouterLink} to="/login">
                 Login
+              </Button>
+              <Button color="inherit" component={RouterLink} to="/register">
+                Register
               </Button>
             </>
           )}
