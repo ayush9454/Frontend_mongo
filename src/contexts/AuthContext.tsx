@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const decoded: any = jwt_decode(token);
+          const decoded: any = (jwt_decode as any)(token);
           if (decoded && decoded.email) {
             const userData = { email: decoded.email, role: 'user' as const };
             setUser(userData);
