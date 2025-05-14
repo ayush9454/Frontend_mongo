@@ -10,8 +10,8 @@ import ParkingLots from './pages/ParkingLots';
 import Bookings from './pages/Bookings';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import { CircularProgress, Box } from '@mui/material';
 import { useAuth } from './contexts/AuthContext';
-import { CircularProgress } from '@mui/material';
 
 const theme = createTheme({
   palette: {
@@ -60,9 +60,9 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
 
@@ -70,25 +70,21 @@ const AppContent: React.FC = () => {
     <>
       <Navbar />
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/parking-lots" element={
-          <PrivateRoute>
-            <ParkingLots />
-          </PrivateRoute>
-        } />
-        <Route path="/bookings" element={
-          <PrivateRoute>
-            <Bookings />
-          </PrivateRoute>
-        } />
-        <Route path="/profile" element={
-          <PrivateRoute>
-            <Profile />
-          </PrivateRoute>
-        } />
-        <Route path="/" element={<Navigate to="/parking-lots" replace />} />
-        <Route path="*" element={<Navigate to="/parking-lots" replace />} />
+        {!isAuthenticated ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/parking-lots" element={<ParkingLots />} />
+            <Route path="/bookings" element={<Bookings />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/" element={<Navigate to="/parking-lots" replace />} />
+            <Route path="*" element={<Navigate to="/parking-lots" replace />} />
+          </>
+        )}
       </Routes>
     </>
   );
