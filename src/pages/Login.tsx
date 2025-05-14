@@ -39,9 +39,11 @@ const Login: React.FC = () => {
     setError('');
     try {
       const res = await api.post('/auth/login', formData);
+      localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
-        login({ email: formData.email, role: 'user' });
-        navigate('/dashboard');
+      const userData = { email: res.data.email, role: 'user' as const };
+      login(userData);
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
     }
