@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { authService } from '../services/api';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Register: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5050/api/auth/register', form);
+      await authService.register(form);
       setSuccess('Registration successful! Please log in.');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err: any) {
