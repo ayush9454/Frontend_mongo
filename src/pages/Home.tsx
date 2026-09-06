@@ -15,14 +15,22 @@ const Home: React.FC = () => {
         sx={{
           background: 'linear-gradient(135deg, #635BFF 0%, #4B44C0 100%)',
           color: 'white',
-          py: { xs: 8, md: 12 },
+          py: { xs: 6, sm: 8, md: 12 },
+          px: { xs: 1, sm: 2 },
           position: 'relative',
           overflow: 'hidden',
         }}
       >
         <Container maxWidth="lg">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 400px' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              gap: { xs: 4, md: 6 },
+              alignItems: 'center',
+            }}
+          >
+            <Box sx={{ flex: 1, width: '100%' }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -33,16 +41,17 @@ const Home: React.FC = () => {
                   src="/smart-parking-logo.svg"
                   alt="Smart Parking Logo"
                   sx={{
-                    height: 40,
-                    mb: 4,
+                    height: { xs: 32, sm: 40 },
+                    mb: 3,
                   }}
                 />
                 <Typography
                   variant="h1"
                   sx={{
-                    fontSize: { xs: '2.5rem', md: '3.5rem' },
+                    fontSize: { xs: '2rem', sm: '2.75rem', md: '3.5rem' },
                     fontWeight: 700,
                     mb: 2,
+                    lineHeight: 1.15,
                   }}
                 >
                   Smart Parking Made Simple
@@ -53,11 +62,20 @@ const Home: React.FC = () => {
                     mb: 4,
                     opacity: 0.9,
                     fontWeight: 400,
+                    fontSize: { xs: '1rem', sm: '1.25rem' },
+                    lineHeight: 1.5,
                   }}
                 >
                   Find and book parking spots instantly. Save time and avoid the hassle of searching for parking.
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 2,
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
                   <Button
                     variant="contained"
                     size="large"
@@ -65,6 +83,8 @@ const Home: React.FC = () => {
                     sx={{
                       bgcolor: 'white',
                       color: 'primary.main',
+                      py: 1.5,
+                      px: 3,
                       '&:hover': {
                         bgcolor: 'rgba(255, 255, 255, 0.9)',
                       },
@@ -79,6 +99,8 @@ const Home: React.FC = () => {
                     sx={{
                       borderColor: 'white',
                       color: 'white',
+                      py: 1.5,
+                      px: 3,
                       '&:hover': {
                         borderColor: 'white',
                         bgcolor: 'rgba(255, 255, 255, 0.1)',
@@ -89,8 +111,15 @@ const Home: React.FC = () => {
                   </Button>
                 </Box>
               </motion.div>
-            </div>
-            <div style={{ flex: '1 1 400px' }}>
+            </Box>
+            <Box
+              sx={{
+                flex: { xs: 'none', md: 1 },
+                width: '100%',
+                display: { xs: 'none', md: 'flex' },
+                justifyContent: 'center',
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -104,35 +133,49 @@ const Home: React.FC = () => {
                     width: '100%',
                     maxWidth: 500,
                     height: 'auto',
-                    display: { xs: 'none', md: 'block' },
                   }}
                 />
               </motion.div>
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 6, sm: 8, md: 12 }, px: { xs: 2, sm: 3 } }}>
         <Typography
           variant="h2"
           align="center"
-          sx={{ mb: 6, fontWeight: 700 }}
+          sx={{
+            mb: { xs: 4, sm: 6 },
+            fontWeight: 700,
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+          }}
         >
           Why Choose Us?
         </Typography>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+            gap: { xs: 2.5, sm: 3, md: 4 },
+          }}
+        >
           {features.map((feature, index) => (
-            <div key={index} style={{ flex: '1 1 300px' }}>
+            <Box key={index} sx={{ minWidth: 0 }}>
               <MotionPaper
                 elevation={0}
                 sx={{
-                  p: 4,
+                  p: { xs: 3, sm: 4 },
                   height: '100%',
                   bgcolor: 'background.paper',
                   border: '1px solid',
                   borderColor: 'divider',
+                  borderRadius: 2,
                 }}
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
@@ -147,16 +190,16 @@ const Home: React.FC = () => {
                     mb: 2,
                   }}
                 />
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+                <Typography variant="h5" sx={{ mb: 1.5, fontWeight: 600, fontSize: { xs: '1.15rem', sm: '1.25rem' } }}>
                   {feature.title}
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                   {feature.description}
                 </Typography>
               </MotionPaper>
-            </div>
+            </Box>
           ))}
-        </div>
+        </Box>
       </Container>
 
       {/* CTA Section */}
@@ -164,15 +207,31 @@ const Home: React.FC = () => {
         sx={{
           bgcolor: 'primary.main',
           color: 'white',
-          py: { xs: 8, md: 12 },
+          py: { xs: 6, sm: 8, md: 10 },
+          px: { xs: 2, sm: 3 },
         }}
       >
         <Container maxWidth="lg">
-          <div style={{ textAlign: 'center' }}>
-            <Typography variant="h3" sx={{ mb: 3, fontWeight: 700 }}>
+          <Box sx={{ textAlign: 'center', maxWidth: 640, mx: 'auto' }}>
+            <Typography
+              variant="h3"
+              sx={{
+                mb: 2,
+                fontWeight: 700,
+                fontSize: { xs: '1.6rem', sm: '2rem', md: '2.5rem' },
+              }}
+            >
               Ready to Get Started?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 4,
+                opacity: 0.9,
+                fontSize: { xs: '0.95rem', sm: '1.1rem' },
+                lineHeight: 1.6,
+              }}
+            >
               Join thousands of users who are already using our smart parking system.
             </Typography>
             <Button
@@ -182,6 +241,9 @@ const Home: React.FC = () => {
               sx={{
                 bgcolor: 'white',
                 color: 'primary.main',
+                py: 1.5,
+                px: 4,
+                width: { xs: '100%', sm: 'auto' },
                 '&:hover': {
                   bgcolor: 'rgba(255, 255, 255, 0.9)',
                 },
@@ -189,7 +251,7 @@ const Home: React.FC = () => {
             >
               Sign In
             </Button>
-          </div>
+          </Box>
         </Container>
       </Box>
     </Box>

@@ -151,8 +151,8 @@ Status: ${booking.status}
   };
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2.5, sm: 4 } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         <MotionBox
           variants={containerVariants}
           initial="hidden"
@@ -162,20 +162,32 @@ Status: ${booking.status}
             variant="h4"
             component="h1"
             gutterBottom
-            sx={{ color: 'text.primary', mb: 4 }}
+            sx={{
+              color: 'text.primary',
+              mb: { xs: 3, sm: 4 },
+              fontSize: { xs: '1.65rem', sm: '2.125rem' },
+              fontWeight: 700,
+            }}
           >
             Dashboard
           </Typography>
 
           {/* Stats Section */}
-          <Grid container spacing={3} sx={{ mb: 6 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: { xs: 2, sm: 3 },
+              mb: { xs: 4, sm: 6 },
+            }}
+          >
             {stats.map((stat, index) => (
-              <div key={index} style={{ width: '100%' }}>
+              <Box key={index} sx={{ minWidth: 0 }}>
                 <MotionPaper
                   variants={itemVariants}
                   whileHover="hover"
                   sx={{
-                    p: 3,
+                    p: { xs: 2.5, sm: 3 },
                     bgcolor: 'background.paper',
                     borderRadius: 2,
                     height: '100%',
@@ -186,78 +198,93 @@ Status: ${booking.status}
                     border: '1px solid #e0e0e0',
                   }}
                 >
-                  <Box sx={{ color: stat.color, mb: 2 }}>
+                  <Box sx={{ color: stat.color, mb: 1.5 }}>
                     {stat.icon}
                   </Box>
                   <Typography
                     variant="h4"
                     component="div"
-                    sx={{ color: 'text.primary', mb: 1 }}
+                    sx={{ color: 'text.primary', mb: 0.5, fontSize: { xs: '1.75rem', sm: '2.125rem' } }}
                   >
                     {stat.value}
                   </Typography>
                   <Typography
                     variant="body1"
-                    sx={{ color: 'text.secondary' }}
+                    sx={{ color: 'text.secondary', fontSize: { xs: '0.9rem', sm: '1rem' } }}
                   >
                     {stat.title}
                   </Typography>
                 </MotionPaper>
-              </div>
+              </Box>
             ))}
-          </Grid>
+          </Box>
 
           {/* Quick Actions */}
           <MotionBox variants={itemVariants}>
             <Typography
               variant="h5"
               component="h2"
-              sx={{ color: 'text.primary', mb: 3 }}
+              sx={{
+                color: 'text.primary',
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                fontWeight: 600,
+              }}
             >
               Quick Actions
             </Typography>
-            <Grid container spacing={3}>
-              <div style={{ width: '100%' }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                gap: { xs: 2, sm: 3 },
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
                 <MotionPaper
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/parking-lots')}
                   sx={{
-                    p: 3,
+                    p: { xs: 2.5, sm: 3 },
                     bgcolor: 'background.paper',
                     borderRadius: 2,
                     cursor: 'pointer',
                     textAlign: 'center',
                     border: '1px solid #e0e0e0',
+                    transition: 'border-color 0.2s',
+                    '&:hover': { borderColor: 'primary.main' },
                   }}
                 >
-                  <DirectionsCar sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                  <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                  <DirectionsCar sx={{ fontSize: { xs: 36, sm: 40 }, color: 'primary.main', mb: 1.5 }} />
+                  <Typography variant="h6" sx={{ color: 'text.primary', fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>
                     Find Parking
                   </Typography>
                 </MotionPaper>
-              </div>
-              <div style={{ width: '100%' }}>
+              </Box>
+              <Box sx={{ minWidth: 0 }}>
                 <MotionPaper
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/bookings')}
                   sx={{
-                    p: 3,
+                    p: { xs: 2.5, sm: 3 },
                     bgcolor: 'background.paper',
                     borderRadius: 2,
                     cursor: 'pointer',
                     textAlign: 'center',
                     border: '1px solid #e0e0e0',
+                    transition: 'border-color 0.2s',
+                    '&:hover': { borderColor: 'primary.main' },
                   }}
                 >
-                  <AccessTime sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                  <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                  <AccessTime sx={{ fontSize: { xs: 36, sm: 40 }, color: 'primary.main', mb: 1.5 }} />
+                  <Typography variant="h6" sx={{ color: 'text.primary', fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>
                     View Bookings
                   </Typography>
                 </MotionPaper>
-              </div>
-            </Grid>
+              </Box>
+            </Box>
           </MotionBox>
         </MotionBox>
       </Container>

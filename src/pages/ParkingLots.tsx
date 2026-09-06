@@ -178,8 +178,8 @@ const ParkingLots: React.FC = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2.5, sm: 4 } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -189,7 +189,12 @@ const ParkingLots: React.FC = () => {
             variant="h4"
             component="h1"
             gutterBottom
-            sx={{ color: 'text.primary', mb: 4 }}
+            sx={{
+              color: 'text.primary',
+              mb: { xs: 2.5, sm: 4 },
+              fontSize: { xs: '1.65rem', sm: '2.125rem' },
+              fontWeight: 700,
+            }}
           >
             Available Parking Lots
           </Typography>
@@ -207,7 +212,7 @@ const ParkingLots: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
-              mb: 4,
+              mb: { xs: 3, sm: 4 },
               bgcolor: 'background.paper',
               borderRadius: 2,
             }}
@@ -299,10 +304,15 @@ const ParkingLots: React.FC = () => {
             <Dialog
               open={bookingDialogOpen}
               onClose={() => setBookingDialogOpen(false)}
+              fullWidth
+              maxWidth="xs"
               PaperProps={{
                 sx: {
                   bgcolor: 'background.paper',
                   color: 'text.primary',
+                  m: { xs: 2, sm: 3 },
+                  width: { xs: 'calc(100% - 32px)', sm: '100%' },
+                  borderRadius: 3,
                 },
               }}
             >

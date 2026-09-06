@@ -167,87 +167,109 @@ const Bookings: React.FC = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2.5, sm: 4 } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'text.primary', mb: 4 }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              color: 'text.primary',
+              mb: { xs: 2.5, sm: 4 },
+              fontSize: { xs: '1.65rem', sm: '2.125rem' },
+              fontWeight: 700,
+            }}
+          >
             My Bookings
           </Typography>
         </MotionBox>
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
-          <Grid container spacing={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5 } }}>
             {bookings.length === 0 && (
-              <Typography variant="body1" sx={{ color: 'text.secondary', ml: 2 }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 No active bookings.
               </Typography>
             )}
             {bookings.map((booking) => (
-              <div key={booking._id} style={{ width: '100%' }}>
+              <Box key={booking._id} sx={{ width: '100%', minWidth: 0 }}>
                 <motion.div variants={itemVariants}>
                   <Card
-                    sx={{ bgcolor: 'background.paper', color: 'text.primary', border: '1px solid #e0e0e0', mb: 2 }}
+                    sx={{
+                      bgcolor: 'background.paper',
+                      color: 'text.primary',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                    }}
                   >
-                    <CardContent>
-                      <Typography variant="h6" sx={{ mb: 1 }}>
-                        {booking.parkingSpaceId?.name}
+                    <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
+                        <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' }, fontWeight: 600 }}>
+                          {booking.parkingSpaceId?.name}
+                        </Typography>
+                        <Chip
+                          label={booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                          color={getStatusColor(booking.status)}
+                          size="small"
+                        />
+                      </Box>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                        <strong>Location:</strong> {booking.parkingSpaceId?.location}
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Location: {booking.parkingSpaceId?.location}
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                        <strong>Capacity:</strong> {booking.parkingSpaceId?.capacity} (Available: {booking.parkingSpaceId?.availableSpots} / {booking.parkingSpaceId?.capacity})
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Capacity: {booking.parkingSpaceId?.capacity}
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                        <strong>Spot:</strong> {booking.parkingId} ({booking.spotType})
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Available: {booking.parkingSpaceId?.availableSpots} / {booking.parkingSpaceId?.capacity}
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                        <strong>Rate:</strong> ₹{booking.parkingSpaceId?.pricePerHour ? booking.parkingSpaceId.pricePerHour * getSpotTypeMultiplier(booking.spotType) : '-'}/hr
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Spot Type: {booking.spotType}
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                        <strong>Time:</strong> {formatDateTime(booking.startTime)} - {formatDateTime(booking.endTime)}
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Price per hour: ₹{booking.parkingSpaceId?.pricePerHour ? booking.parkingSpaceId.pricePerHour * getSpotTypeMultiplier(booking.spotType) : '-'}
+                      <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 700, mt: 1, mb: 2 }}>
+                        Total: ₹{booking.totalPrice}
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        {formatDateTime(booking.startTime)} - {formatDateTime(booking.endTime)}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Spot Number: {booking.parkingId}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 2 }}>
-                        ₹{booking.totalPrice}
-                      </Typography>
-                      <Chip
-                        label={booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                        color={getStatusColor(booking.status)}
-                        size="small"
-                        sx={{ mb: 1 }}
-                      />
-                      <Button
-                        variant="outlined"
-                        startIcon={<Download />}
-                        onClick={() => handleDownloadTicket(booking)}
-                        sx={{ color: 'primary.main', borderColor: 'primary.main', '&:hover': { bgcolor: 'background.paper' } }}
-                      >
-                        Download
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        startIcon={<Cancel />}
-                        onClick={() => handleCancelBooking(booking._id)}
-                        sx={{ ml: 2, borderColor: 'error.main', color: 'error.main', '&:hover': { bgcolor: 'background.paper' } }}
-                      >
-                        Remove
-                      </Button>
+                      <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+                        <Button
+                          variant="outlined"
+                          startIcon={<Download />}
+                          onClick={() => handleDownloadTicket(booking)}
+                          sx={{
+                            color: 'primary.main',
+                            borderColor: 'primary.main',
+                            width: { xs: '100%', sm: 'auto' },
+                            '&:hover': { bgcolor: 'background.paper' },
+                          }}
+                        >
+                          Download Ticket
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          startIcon={<Cancel />}
+                          onClick={() => handleCancelBooking(booking._id)}
+                          sx={{
+                            borderColor: 'error.main',
+                            color: 'error.main',
+                            width: { xs: '100%', sm: 'auto' },
+                            '&:hover': { bgcolor: 'background.paper' },
+                          }}
+                        >
+                          Cancel Booking
+                        </Button>
+                      </Box>
                     </CardContent>
                   </Card>
                 </motion.div>
-              </div>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </motion.div>
       </Container>
     </Box>

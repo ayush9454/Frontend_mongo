@@ -5,18 +5,13 @@ import {
   Typography,
   TextField,
   Button,
-  Paper,
   Alert,
   Link,
 } from '@mui/material';
-import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
 import api from '../services/api';
-
-const MotionPaper = motion(Paper);
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -60,10 +55,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" sx={{ px: { xs: 2.5, sm: 3 } }}>
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: { xs: 4, sm: 8 },
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

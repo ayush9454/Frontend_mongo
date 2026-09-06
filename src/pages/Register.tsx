@@ -35,8 +35,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Container maxWidth="xs" sx={{ px: { xs: 2.5, sm: 3 } }}>
+      <Box sx={{ mt: { xs: 4, sm: 8 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">Sign Up</Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           {error && <Alert severity="error">{error}</Alert>}
