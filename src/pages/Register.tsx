@@ -1,88 +1,104 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
   Alert,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-
-const Register: React.FC = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { authService, errorMessage } from "../services/api";
+export default function Register() {
+  const { user } = useAuth(),
+    navigate = useNavigate();
+  const [name, setName] = useState(""),
+    [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [success, setSuccess] = useState(false);
   useEffect(() => {
-    if (user) {
-      navigate('/dashboard', { replace: true });
-    }
+    if (user) navigate("/dashboard", { replace: true });
   }, [user, navigate]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError("");
     try {
-      await authService.register(form);
-      setSuccess('Registration successful! Please log in.');
-      setTimeout(() => navigate('/login'), 1500);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed');
+      await authService.register({ name, email, password });
+      setSuccess(true);
+    } catch (err) {
+      setError(errorMessage(err, "Registration failed. Please retry."));
+    } finally {
+      setBusy(false);
     }
   };
-
   return (
-    <Container maxWidth="xs" sx={{ px: { xs: 2.5, sm: 3 } }}>
-      <Box sx={{ mt: { xs: 4, sm: 8 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">Sign Up</Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+    <Container maxWidth="xs" sx={{ py: 6 }}>
+      <Typography component="h1" variant="h4">
+        Create account
+      </Typography>
+      {success ? (
+        <>
+          <Alert severity="success" sx={{ my: 2 }}>
+            Registration successful. Please sign in.
+          </Alert>
+          <Button component={Link} to="/login">
+            Sign in
+          </Button>
+        </>
+      ) : (
+        <Box component="form" onSubmit={submit}>
           {error && <Alert severity="error">{error}</Alert>}
-          {success && <Alert severity="success">{success}</Alert>}
-          <TextField margin="normal" required fullWidth label="Name" name="name" value={form.name} onChange={handleChange} />
-          <TextField margin="normal" required fullWidth label="Email" name="email" value={form.email} onChange={handleChange} />
           <TextField
-            margin="normal"
-            required
             fullWidth
-            label="Password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            value={form.password}
-            onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    onMouseDown={(e) => e.preventDefault()}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
+            required
+            label="Name"
+            autoComplete="name"
+            margin="normal"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            inputProps={{ maxLength: 100 }}
           />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign Up</Button>
+          <TextField
+            fullWidth
+            required
+            label="Email"
+            type="email"
+            autoComplete="email"
+            margin="normal"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <TextField
+            fullWidth
+            required
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            margin="normal"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            helperText="At least 8 characters; maximum 72 UTF-8 bytes"
+            inputProps={{ minLength: 8, maxLength: 72 }}
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            disabled={busy}
+            sx={{ my: 2 }}
+          >
+            {busy ? "Creating account…" : "Create account"}
+          </Button>
+          <Button component={Link} to="/login">
+            Sign in
+          </Button>
         </Box>
-      </Box>
+      )}
     </Container>
   );
-};
-
-export default Register; 
+}

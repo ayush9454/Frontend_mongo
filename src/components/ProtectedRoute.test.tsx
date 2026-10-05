@@ -1,60 +1,44 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from '../contexts/AuthContext';
-import ProtectedRoute from './ProtectedRoute';
-
-describe('ProtectedRoute', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
-  test('redirects unauthenticated user to login', () => {
-    render(
-      <AuthProvider>
-        <MemoryRouter initialEntries={['/dashboard']}>
-          <Routes>
-            <Route path="/login" element={<div>Login Page</div>} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <div>Dashboard Protected Content</div>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </MemoryRouter>
-      </AuthProvider>
-    );
-
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
-    expect(screen.queryByText('Dashboard Protected Content')).not.toBeInTheDocument();
-  });
-
-  test('keeps authenticated user on protected page on page refresh / initial render', () => {
-    // Simulate user in localStorage prior to component mounting (such as on page refresh)
-    localStorage.setItem('user', JSON.stringify({ email: 'john@example.com', role: 'user' }));
-
-    render(
-      <AuthProvider>
-        <MemoryRouter initialEntries={['/dashboard']}>
-          <Routes>
-            <Route path="/login" element={<div>Login Page</div>} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <div>Dashboard Protected Content</div>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </MemoryRouter>
-      </AuthProvider>
-    );
-
-    expect(screen.getByText('Dashboard Protected Content')).toBeInTheDocument();
-    expect(screen.queryByText('Login Page')).not.toBeInTheDocument();
-  });
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "../contexts/AuthContext";
+import { authService } from "../services/api";
+import { testUser } from "../testFixtures";
+import ProtectedRoute from "./ProtectedRoute";
+jest.mock("../services/api", () => ({
+  authService: { me: jest.fn() },
+  onSessionExpired: () => () => {},
+  errorMessage: () => "Session failed",
+}));
+function renderRoute() {
+  render(
+    <AuthProvider>
+      <MemoryRouter
+        initialEntries={["/dashboard"]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <Routes>
+          <Route path="/login" element={<div>Login page</div>} />
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute>Protected content</ProtectedRoute>}
+          />
+        </Routes>
+      </MemoryRouter>
+    </AuthProvider>,
+  );
+}
+beforeEach(() => {
+  localStorage.clear();
+  (authService.me as jest.Mock).mockReset();
+});
+test("redirects when no token exists", async () => {
+  renderRoute();
+  expect(await screen.findByText("Login page")).toBeInTheDocument();
+});
+test("waits for the server to verify a restored session", async () => {
+  localStorage.setItem("token", "token");
+  (authService.me as jest.Mock).mockResolvedValue({ data: testUser });
+  renderRoute();
+  expect(await screen.findByText("Protected content")).toBeInTheDocument();
 });

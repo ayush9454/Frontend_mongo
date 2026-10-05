@@ -1,57 +1,79 @@
-import React from 'react';
-import { render, screen, act } from '@testing-library/react';
-import { AuthProvider, useAuth } from './AuthContext';
-
-const TestComponent: React.FC = () => {
-  const { user, login, logout, loading } = useAuth();
+import React from "react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
+import { AuthProvider, useAuth } from "./AuthContext";
+import { authService, onSessionExpired } from "../services/api";
+import { testUser } from "../testFixtures";
+jest.mock("../services/api", () => ({
+  authService: { me: jest.fn() },
+  onSessionExpired: jest.fn(),
+  errorMessage: () => "Unable to verify session",
+}));
+const me = authService.me as jest.Mock;
+let expire: () => void;
+function Probe() {
+  const { user, loading, login, logout, sessionError } = useAuth();
   return (
-    <div>
-      <div data-testid="loading">{loading ? 'loading' : 'not-loading'}</div>
-      <div data-testid="user">{user ? user.email : 'no-user'}</div>
-      <button onClick={() => login({ email: 'test@example.com', role: 'user' })}>Login</button>
+    <>
+      <div>{loading ? "loading" : user?.email || "signed out"}</div>
+      <div>{sessionError}</div>
+      <button onClick={() => login(testUser, "token")}>Login</button>
       <button onClick={logout}>Logout</button>
-    </div>
+    </>
   );
-};
-
-describe('AuthContext', () => {
-  beforeEach(() => {
-    localStorage.clear();
+}
+beforeEach(() => {
+  localStorage.clear();
+  me.mockReset();
+  (onSessionExpired as jest.Mock).mockImplementation((callback) => {
+    expire = callback;
+    return () => {};
   });
-
-  test('synchronously initializes user from localStorage on initial render', () => {
-    localStorage.setItem('user', JSON.stringify({ email: 'saved@example.com', role: 'user' }));
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-
-    // On initial render without waiting for useEffect, user is immediately available
-    expect(screen.getByTestId('user').textContent).toBe('saved@example.com');
-  });
-
-  test('clears user, token, and userId on logout', () => {
-    localStorage.setItem('user', JSON.stringify({ email: 'user@example.com', role: 'user' }));
-    localStorage.setItem('token', 'sample-token');
-    localStorage.setItem('userId', '12345');
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-
-    expect(screen.getByTestId('user').textContent).toBe('user@example.com');
-
-    act(() => {
-      screen.getByText('Logout').click();
-    });
-
-    expect(screen.getByTestId('user').textContent).toBe('no-user');
-    expect(localStorage.getItem('user')).toBeNull();
-    expect(localStorage.getItem('token')).toBeNull();
-    expect(localStorage.getItem('userId')).toBeNull();
-  });
+});
+test("does not trust a stored user without a token", async () => {
+  localStorage.setItem("user", JSON.stringify(testUser));
+  render(
+    <AuthProvider>
+      <Probe />
+    </AuthProvider>,
+  );
+  expect(await screen.findByText("signed out")).toBeInTheDocument();
+  expect(me).not.toHaveBeenCalled();
+});
+test("verifies the token before restoring the session", async () => {
+  localStorage.setItem("token", "token");
+  me.mockResolvedValue({ data: testUser });
+  render(
+    <AuthProvider>
+      <Probe />
+    </AuthProvider>,
+  );
+  expect(await screen.findByText(testUser.email)).toBeInTheDocument();
+  expect(me).toHaveBeenCalledTimes(1);
+});
+test("clears session on logout and on an expired token", async () => {
+  render(
+    <AuthProvider>
+      <Probe />
+    </AuthProvider>,
+  );
+  fireEvent.click(screen.getByText("Login"));
+  expect(localStorage.getItem("token")).toBe("token");
+  act(() => expire());
+  expect(screen.getByText("signed out")).toBeInTheDocument();
+  expect(localStorage.getItem("token")).toBeNull();
+  fireEvent.click(screen.getByText("Login"));
+  fireEvent.click(screen.getByText("Logout"));
+  expect(localStorage.getItem("user")).toBeNull();
+});
+test("shows session network failures instead of trusting cached user data", async () => {
+  localStorage.setItem("token", "token");
+  me.mockRejectedValue(new Error("network"));
+  render(
+    <AuthProvider>
+      <Probe />
+    </AuthProvider>,
+  );
+  expect(
+    await screen.findByText("Unable to verify session"),
+  ).toBeInTheDocument();
 });

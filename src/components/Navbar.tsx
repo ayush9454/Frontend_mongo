@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,7 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Close as CloseIcon,
@@ -23,9 +23,9 @@ import {
   History as HistoryIcon,
   Logout as LogoutIcon,
   Login as LoginIcon,
-} from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+} from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -45,62 +45,91 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     setMobileOpen(false);
-    navigate('/login');
+    navigate("/login");
   };
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
-    { label: 'Parking Lots', path: '/parking-lots', icon: <ParkingIcon /> },
-    { label: 'My Bookings', path: '/bookings', icon: <BookingsIcon /> },
-    { label: 'History', path: '/history', icon: <HistoryIcon /> },
+    { label: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
+    { label: "Parking Lots", path: "/parking-lots", icon: <ParkingIcon /> },
+    { label: "My Bookings", path: "/bookings", icon: <BookingsIcon /> },
+    { label: "History", path: "/history", icon: <HistoryIcon /> },
   ];
 
   return (
-    <AppBar position="sticky" color="default" elevation={1} sx={{ bgcolor: 'background.paper' }}>
+    <AppBar
+      position="sticky"
+      color="default"
+      elevation={1}
+      sx={{ bgcolor: "background.paper" }}
+    >
       <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
         <Typography
           variant="h6"
-          component="div"
+          component="button"
           sx={{
             flexGrow: 1,
-            cursor: 'pointer',
-            color: 'primary.main',
+            cursor: "pointer",
+            background: "none",
+            border: 0,
+            textAlign: "left",
+            color: "primary.main",
             fontWeight: 700,
-            fontSize: { xs: '1.1rem', sm: '1.25rem' },
+            fontSize: { xs: "1.1rem", sm: "1.25rem" },
           }}
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
         >
           Smart Parking
         </Typography>
 
         {/* Desktop Navigation */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           {user ? (
             <>
               {navItems.map((item) => (
                 <Button
                   key={item.path}
-                  color={location.pathname === item.path ? 'primary' : 'inherit'}
-                  variant={location.pathname === item.path ? 'contained' : 'text'}
+                  color={
+                    location.pathname === item.path ? "primary" : "inherit"
+                  }
+                  variant={
+                    location.pathname === item.path ? "contained" : "text"
+                  }
                   size="small"
                   onClick={() => navigate(item.path)}
                 >
                   {item.label}
                 </Button>
               ))}
-              <Button color="error" variant="outlined" size="small" onClick={handleLogout} sx={{ ml: 1 }}>
+              <Button
+                color="error"
+                variant="outlined"
+                size="small"
+                onClick={handleLogout}
+                sx={{ ml: 1 }}
+              >
                 Logout
               </Button>
             </>
           ) : (
-            <Button color="primary" variant="contained" size="small" onClick={() => navigate('/login')}>
+            <Button
+              color="primary"
+              variant="contained"
+              size="small"
+              onClick={() => navigate("/login")}
+            >
               Login
             </Button>
           )}
         </Box>
 
         {/* Mobile Hamburger Button */}
-        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+        <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton
             color="inherit"
             aria-label="open navigation menu"
@@ -121,18 +150,32 @@ const Navbar: React.FC = () => {
         PaperProps={{
           sx: {
             width: 280,
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             p: 2,
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
           },
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 700 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 2,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ color: "primary.main", fontWeight: 700 }}
+          >
             Smart Parking
           </Typography>
-          <IconButton onClick={handleDrawerToggle} size="small" aria-label="close drawer">
+          <IconButton
+            onClick={handleDrawerToggle}
+            size="small"
+            aria-label="close drawer"
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -150,15 +193,20 @@ const Navbar: React.FC = () => {
                       selected={isSelected}
                       sx={{
                         borderRadius: 2,
-                        '&.Mui-selected': {
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          '& .MuiListItemIcon-root': { color: 'white' },
-                          '&:hover': { bgcolor: 'primary.dark' },
+                        "&.Mui-selected": {
+                          bgcolor: "primary.main",
+                          color: "white",
+                          "& .MuiListItemIcon-root": { color: "white" },
+                          "&:hover": { bgcolor: "primary.dark" },
                         },
                       }}
                     >
-                      <ListItemIcon sx={{ color: isSelected ? 'white' : 'text.secondary', minWidth: 40 }}>
+                      <ListItemIcon
+                        sx={{
+                          color: isSelected ? "white" : "text.secondary",
+                          minWidth: 40,
+                        }}
+                      >
                         {item.icon}
                       </ListItemIcon>
                       <ListItemText primary={item.label} />
@@ -172,11 +220,11 @@ const Navbar: React.FC = () => {
                   onClick={handleLogout}
                   sx={{
                     borderRadius: 2,
-                    color: 'error.main',
-                    '&:hover': { bgcolor: 'error.lighter' },
+                    color: "error.main",
+                    "&:hover": { bgcolor: "error.lighter" },
                   }}
                 >
-                  <ListItemIcon sx={{ color: 'error.main', minWidth: 40 }}>
+                  <ListItemIcon sx={{ color: "error.main", minWidth: 40 }}>
                     <LogoutIcon />
                   </ListItemIcon>
                   <ListItemText primary="Logout" />
@@ -186,15 +234,15 @@ const Navbar: React.FC = () => {
           ) : (
             <ListItem disablePadding>
               <ListItemButton
-                onClick={() => handleNavClick('/login')}
+                onClick={() => handleNavClick("/login")}
                 sx={{
                   borderRadius: 2,
-                  bgcolor: 'primary.main',
-                  color: 'white',
-                  '&:hover': { bgcolor: 'primary.dark' },
+                  bgcolor: "primary.main",
+                  color: "white",
+                  "&:hover": { bgcolor: "primary.dark" },
                 }}
               >
-                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
+                <ListItemIcon sx={{ color: "white", minWidth: 40 }}>
                   <LoginIcon />
                 </ListItemIcon>
                 <ListItemText primary="Login" />
@@ -207,4 +255,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

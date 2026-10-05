@@ -1,132 +1,110 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
   Alert,
-  Link,
-  InputAdornment,
+  Box,
+  Button,
+  Container,
   IconButton,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
-
-const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user, login } = useAuth();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
-
-  React.useEffect(() => {
-    if (user) {
-      navigate(from, { replace: true });
-    }
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { authService, errorMessage } from "../services/api";
+export default function Login() {
+  const { user, login } = useAuth(),
+    navigate = useNavigate(),
+    location = useLocation();
+  const destination =
+    (location.state as { from?: { pathname?: string } } | null)?.from
+      ?.pathname || "/dashboard";
+  const from =
+    destination.startsWith("/") &&
+    !destination.startsWith("//") &&
+    !destination.includes("\\") &&
+    !["/login", "/register"].includes(destination)
+      ? destination
+      : "/dashboard";
+  const [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [show, setShow] = useState(false),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  useEffect(() => {
+    if (user) navigate(from, { replace: true });
   }, [user, navigate, from]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError("");
     try {
-      const res = await api.post('/auth/login', formData);
-      localStorage.setItem('userId', res.data.userId);
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-      }
-      login({ email: formData.email, role: 'user' });
+      const { data } = await authService.login({ email, password });
+      login(
+        { userId: data.userId, name: data.name, email: data.email },
+        data.token,
+      );
       navigate(from, { replace: true });
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+    } catch (err) {
+      setError(errorMessage(err, "Login failed. Please retry."));
+    } finally {
+      setBusy(false);
     }
   };
-
   return (
-    <Container component="main" maxWidth="xs" sx={{ px: { xs: 2.5, sm: 3 } }}>
-      <Box
-        sx={{
-          marginTop: { xs: 4, sm: 8 },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            autoComplete="current-password"
-            value={formData.password}
-            onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    onMouseDown={(e) => e.preventDefault()}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
-          <Typography variant="body2" align="center">
-            Don't have an account?{' '}
-            <Link component={RouterLink} to="/register">Sign Up</Link>
-          </Typography>
-        </Box>
+    <Container maxWidth="xs" sx={{ py: 6 }}>
+      <Typography component="h1" variant="h4">
+        Sign in
+      </Typography>
+      <Box component="form" onSubmit={submit}>
+        {error && <Alert severity="error">{error}</Alert>}
+        <TextField
+          fullWidth
+          required
+          label="Email"
+          type="email"
+          autoComplete="email"
+          margin="normal"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <TextField
+          fullWidth
+          required
+          label="Password"
+          type={show ? "text" : "password"}
+          autoComplete="current-password"
+          margin="normal"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={show ? "Hide password" : "Show password"}
+                  onClick={() => setShow(!show)}
+                >
+                  {show ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          disabled={busy}
+          sx={{ my: 2 }}
+        >
+          {busy ? "Signing in…" : "Sign in"}
+        </Button>
+        <Button component={Link} to="/register">
+          Create account
+        </Button>
       </Box>
     </Container>
   );
-};
-
-export default Login; 
+}
